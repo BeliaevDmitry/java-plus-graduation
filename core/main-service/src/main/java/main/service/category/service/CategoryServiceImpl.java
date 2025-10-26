@@ -1,65 +1,85 @@
-package main.service.comment.controller;
+package main.service.category.service;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import main.service.comment.dto.CommentDto;
-import main.service.comment.dto.NewCommentDto;
-import main.service.comment.service.CommentService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import main.service.category.dto.CategoryDto;
+import main.service.category.dto.NewCategoryDto;
+import main.service.category.mapper.CategoryMapper;
+import main.service.category.model.Category;
+import main.service.category.repository.CategoryRepository;
+import main.service.events.model.EventModel;
+import main.service.events.services.PublicService;
+import main.service.exception.ConflictException;
+import main.service.exception.NotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-@RestController
-@RequestMapping("/admin/events/{eventId}/comments")
+@Service
 @RequiredArgsConstructor
-@Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@SuppressWarnings("unused")
-public class AdminCommentController {
-    CommentService commentService;
+@Transactional(readOnly = true)
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+public class CategoryServiceImpl implements CategoryService {
 
-    @PatchMapping("/{commentId}")
-    public CommentDto updateComment(@PathVariable @NotNull @Positive Long eventId,
-                                    @PathVariable @NotNull @Positive Long commentId,
-                                    @RequestBody @Valid NewCommentDto updateCommentDto) {
-        log.info("Поступил Admin-запрос на обновление комментария id: {} для события id: {}", commentId, eventId);
-        return commentService.adminUpdate(eventId, commentId, updateCommentDto);
+    CategoryRepository categoryRepository;
+    PublicService eventService;
+    CategoryMapper mapper;
+
+    @Override
+    @Transactional
+    public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
+        validateNameExist(newCategoryDto.getName());
+        return mapper.toCategoryDto(categoryRepository.save(mapper.toCategory(newCategoryDto)));
     }
 
-    @DeleteMapping("/{commentId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable @NotNull @Positive Long eventId,
-                              @PathVariable @NotNull @Positive Long commentId) {
-        log.info("Поступил Admin-запрос на удаление комментария id: {} для события id: {}", commentId, eventId);
-        commentService.adminDelete(eventId, commentId);
+    @Override
+    @Transactional
+    public void deleteCategory(Long catId) {
+        List<EventModel> events = eventService.findAllByCategoryId(catId);
+        if (events.isEmpty()) {
+            categoryRepository.deleteById(catId);
+        } else {
+            throw new ConflictException("Категория не может быть удалена пока содержит события");
+        }
     }
 
-    @GetMapping
-    public List<CommentDto> getCommentsByEvent(@PathVariable @NotNull @Positive Long eventId,
-                                               @RequestParam(name = "from", defaultValue = "0") int from,
-                                               @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Получен Admin-запрос списка комментариев по событию id: {}", eventId);
-        return commentService.findAllByEvent(eventId, from, size);
+    @Override
+    @Transactional
+    public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Категория с id " + catId + " не найдена"));
+        if (!category.getName().equals(categoryDto.getName())) {
+            validateNameExist(categoryDto.getName());
+        }
+        mapper.updateCategoryFromDto(categoryDto, category);
+        return mapper.toCategoryDto(category);
     }
 
-    @GetMapping("/{commentId}")
-    public CommentDto findCommentByEventAndId(@PathVariable @NotNull @Positive Long eventId,
-                                              @PathVariable @NotNull @Positive Long commentId) {
-        log.info("Получен Admin-запрос одного комментария id: {} по событию id: {}", commentId, eventId);
-        return commentService.findByEventAndCommentId(eventId, commentId);
+    @Override
+    public List<CategoryDto> getCategories(Integer from, Integer size) {
+        return categoryRepository.findAll().stream()
+                .map(mapper::toCategoryDto)
+                .skip(from)
+                .limit(size)
+                .toList();
+    }
+
+    @Override
+    public CategoryDto getCategory(Long catId) {
+        return mapper.toCategoryDto(
+                categoryRepository.findById(catId)
+                        .orElseThrow(() -> new NotFoundException("Категория с id " + catId + " не найдена")));
+    }
+
+    private void validateNameExist(String name) {
+        if (categoryRepository.existsByName(name)) {
+            throw new ConflictException("Название категории уже существует");
+        }
+    }
+
+    public Optional<Category> findById(Long id) {
+        return categoryRepository.findById(id);
     }
 }
