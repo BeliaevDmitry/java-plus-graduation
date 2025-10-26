@@ -1,13 +1,22 @@
-  package stats.server;
-    
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-    
-    @SpringBootApplication
-    @EnableDiscoveryClient
-    public class StatServerApp {
-    public static void main(String[] args) {
-    SpringApplication.run(StatServerApp.class, args);
-    }
-  }
+spring:
+  application:
+    name: stats-server
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
