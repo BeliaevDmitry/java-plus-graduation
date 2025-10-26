@@ -10,11 +10,23 @@
     </parent>
 
     <artifactId>stats</artifactId>
+    <packaging>pom</packaging>
 
-    <properties>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <modules>
+        <module>stats-client</module>
+        <module>stats-dto</module>
+        <module>stats-server</module>
+        <module>stats-client</module>
+        <module>stats-dto</module>
+        <module>stats-server</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 
 </project>

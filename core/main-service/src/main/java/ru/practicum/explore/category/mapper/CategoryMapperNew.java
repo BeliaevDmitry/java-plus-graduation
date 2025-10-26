@@ -3,7 +3,6 @@ package ru.practicum.explore.category.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.explore.category.dto.CategoryDto;
-import ru.practicum.explore.category.dto.CategoryDtoWithId;
 import ru.practicum.explore.category.model.Category;
 
 import java.util.ArrayList;

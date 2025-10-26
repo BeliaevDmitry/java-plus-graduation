@@ -1,7 +1,6 @@
 package ru.practicum.explore.category.service;
 
 import ru.practicum.explore.category.dto.CategoryDto;
-import ru.practicum.explore.category.dto.CategoryDtoWithId;
 
 import java.util.Collection;
 

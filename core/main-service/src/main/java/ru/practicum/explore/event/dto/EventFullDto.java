@@ -3,7 +3,6 @@ package ru.practicum.explore.event.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
-import ru.practicum.explore.category.dto.CategoryDtoWithId;
 import ru.practicum.explore.event.model.EventState;
 import ru.practicum.explore.user.dto.UserDtoWithNoEmail;
 
