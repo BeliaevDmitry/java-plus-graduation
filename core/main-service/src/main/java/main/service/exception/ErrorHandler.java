@@ -90,4 +90,16 @@ public class ErrorHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError illegalStateExceptionHandle(IllegalStateException e) {
+        log.error("Illegal State error: ", e);
+        return ApiError.builder()
+                .status(HttpStatus.CONFLICT)
+                .reason("Некорректное состояние объекта")
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }
