@@ -95,7 +95,7 @@ public class AdminServiceImpl implements AdminService {
         if (state == null) return;
 
         if (state == StateActionAdmin.PUBLISH_EVENT && event.getState() != EventState.PENDING) {
-            throw new ConflictException("Только события в статусе ожидание могут быть опубликованы");
+            throw new IllegalStateException("Только события в статусе ожидание могут быть опубликованы");
         }
         if (state == StateActionAdmin.REJECT_EVENT && event.getState() == EventState.PUBLISHED) {
             throw new ConflictException("Только неопубликованные события могут быть отменены");
@@ -111,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
 
         if (state == StateActionAdmin.PUBLISH_EVENT) {
             if ((event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))) {
-                throw new ConflictException("Время старта события должно быть позже");
+                throw new IllegalArgumentException ("Время старта события должно быть позже");
             }
             event.setState(EventState.PUBLISHED);
             event.setPublishedOn(LocalDateTime.now());
