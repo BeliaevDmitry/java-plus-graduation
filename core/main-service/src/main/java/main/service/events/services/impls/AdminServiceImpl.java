@@ -111,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
 
         if (state == StateActionAdmin.PUBLISH_EVENT) {
             if ((event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))) {
-                throw new IllegalArgumentException ("Время старта события должно быть позже");
+                throw new ConflictException ("Время старта события должно быть позже");
             }
             event.setState(EventState.PUBLISHED);
             event.setPublishedOn(LocalDateTime.now());
