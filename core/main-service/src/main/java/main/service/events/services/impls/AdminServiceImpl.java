@@ -95,7 +95,7 @@ public class AdminServiceImpl implements AdminService {
         if (state == null) return;
 
         if (state == StateActionAdmin.PUBLISH_EVENT && event.getState() != EventState.PENDING) {
-            throw new IllegalStateException("Только события в статусе ожидание могут быть опубликованы");
+            throw new ConflictException("Только события в статусе ожидание могут быть опубликованы");
         }
         if (state == StateActionAdmin.REJECT_EVENT && event.getState() == EventState.PUBLISHED) {
             throw new ConflictException("Только неопубликованные события могут быть отменены");
