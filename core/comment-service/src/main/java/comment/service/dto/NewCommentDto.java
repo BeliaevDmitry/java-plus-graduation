@@ -1,4 +1,4 @@
-package main.service.comment.dto;
+package comment.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

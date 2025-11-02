@@ -1,13 +1,10 @@
-package main.service.comment.model;
+package comment.service.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,8 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import main.service.events.model.EventModel;
-import main.service.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -32,17 +27,16 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
     Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
-    EventModel event;
+    @Column(name = "event_id", nullable = false)
+    Long event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    User author;
+    @Column(name = "author_id", nullable = false)
+    Long authorId;
 
-    @Column(name = "message")
+    @Column(name = "message", length = 1000)
     String message;
 
     @Column(name = "created_on")

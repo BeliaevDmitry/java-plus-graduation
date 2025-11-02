@@ -1,4 +1,4 @@
-package main.service.comment.dto;
+package comment.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;

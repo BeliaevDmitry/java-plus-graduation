@@ -1,7 +1,7 @@
-package main.service.comment.service;
+package comment.service.service;
 
-import main.service.comment.dto.CommentDto;
-import main.service.comment.dto.NewCommentDto;
+import interaction.api.dto.comment.CommentDto;
+import interaction.api.dto.comment.NewCommentDto;
 
 import java.util.List;
 
