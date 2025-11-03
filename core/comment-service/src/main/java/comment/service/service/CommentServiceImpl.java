@@ -30,6 +30,7 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@SuppressWarnings("unused")
 @Slf4j
 public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
